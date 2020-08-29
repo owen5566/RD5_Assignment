@@ -1,7 +1,5 @@
 <?php
-    if(1>2){
-        header("location: login.php");
-    }
+    
 ?>
 
 <!DOCTYPE html>
@@ -9,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>detail</title>
+    <title>withdraw</title>
     <link rel="stylesheet" href="css/bootstrap4/bootstrap.min.css">
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
     <script src="js/jquery-3.2.1.min.js"></script>
@@ -35,6 +33,9 @@
         }
         #ActionAmount{
             text-align: right;
+        }
+        #btnClearAmount{
+            height: 36px;
         }
         .title-s{
             font-size: xx-large;
@@ -74,65 +75,37 @@
           </div>
       </div>
       <hr>
+      <!-- withdraw -->
+      <div id="titlebalace" class="row justify-content-center title-s">
+        <div class="col" style="text-align:center">提款</div>
+      </div>
+      <div class="row justify-content-center">
+        <div class = "col-6">
+            <div class="input-group mb-3">
+                    <input id = "inputAmount" type="number" min="100" class="form-control" placeholder="輸入金額" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+            </div>
+        </div>
+            <input id="btnClearAmount" type="button" class="btn btn-outline-secondary col-2" value="清空"></input>
+      </div>
+      <div class="row justify-content-center">
+        <input id="btnWithdraw" type="submit" class="btn btn-outline-info col-4" value="確認"></input>
+        <input id="btnCancel" type="button" class="btn btn-outline-secondary col-4" value="取消"
+               onclick="window.location.href='main.php'"></input>
+      </div>
       <!-- button Group -->
-      <div id="controlGroup" class="row justify-content-center">
+      <!-- <div id="controlGroup" class="row justify-content-center">
         <div id = "btnGroup" class="btn-group" role="group" aria-label="Basic example">
             <button type="button" class="btn btn-outline-success btn-detail">今天</button>
             <button type="button" class="btn btn-outline-success btn-detail">這週</button>
             <button type="button" class="btn btn-outline-success btn-detail">這個月</button>
         </div>
-      </div>
-      <!-- detail list -->
-      <div id="detailList" >
-        <div id ="detail" class="row">
-            <div class="col">
-                <div id="detailDate" class="row" style="background-color: whitesmoke;">2020/08/07</div>
-                <div id="detailAction" class="row action">
-                    <div id="ActionName" class="col action">提款</div>
-                    <div id="ActionAmount" class="col action">$1000</div>
-                </div>
-                <div id="detailAction" class="row">
-                    <div id="ActionName" class="col note">備註：</div>
-                    <div id="ActionAmount" class="col note">餘額$5215</div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div id ="detail" class="row">
-            <div class="col">
-                <div id="detailDate" class="row" style="background-color: whitesmoke;">2020/08/07</div>
-                <div id="detailAction" class="row action">
-                    <div id="ActionName" class="col action">提款</div>
-                    <div id="ActionAmount" class="col action">$1000</div>
-                </div>
-                <div id="detailAction" class="row">
-                    <div id="ActionName" class="col note">備註：</div>
-                    <div id="ActionAmount" class="col note">餘額$6215</div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div id ="detail" class="row">
-            <div class="col">
-                <div id="detailDate" class="row" style="background-color: whitesmoke;">2020/08/07</div>
-                <div id="detailAction" class="row action">
-                    <div id="ActionName" class="col action">存款</div>
-                    <div id="ActionAmount" class="col action">$7215</div>
-                </div>
-                <div id="detailAction" class="row">
-                    <div id="ActionName" class="col note">備註：</div>
-                    <div id="ActionAmount" class="col note">餘額$7215</div>
-                </div>
-            </div>
-        </div>
-      </div>
-      <hr>
-    <!-- total -->
+      </div> -->
+      
 
     <script>
         let balance = 0;
         $(function(){
-            
+            $("#btnClearAmount").click(clearAmount);
         })
         function eyeShow(status){
             if(status){
@@ -144,6 +117,9 @@
                 $("#eye").show();
                 $("#balanceNum").text("$*******");
             }
+        }
+        function clearAmount(){
+            $("#inputAmount").val("");
         }
     </script>
 </body>

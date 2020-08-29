@@ -31,6 +31,10 @@
         #submit{
             margin:6px;
         }
+        .error{
+            color:red;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -45,16 +49,17 @@
                     <!-- username -->
                     <div class="input-group mb-3 col-6">
                         <input id = "txtUserName" type="text" name="txtUserName" class="form-control" placeholder="使用者帳戶" aria-label="Username"
-                            aria-describedby="basic-addon1">
+                            aria-describedby="basic-addon1" required>
                     </div>
                     <!-- password -->
                     <div class="input-group mb-3 col-6">
-                        <input type="password" name="txtUserPass" class="form-control" placeholder="密碼" aria-label="Username"
-                            aria-describedby="basic-addon1">
+                        <input id = "txtUserPass" type="password" name="txtUserPass" class="form-control" placeholder="密碼" aria-label="Username"
+                            aria-describedby="basic-addon1" required>
                     </div>
-                    <div class=row>
+                    <div id="errorMsg" class="input-group mb-3 col-6 error" >帳號／密碼錯誤</div>
+                    <div class="row" >
                         <input id = "btnLogin" type="submit" name="btnLogin" value="登入" class="btn btn-outline-success col-1.5"></input>
-                        <div id="submit">還沒有帳戶?<a href="signUp.php">新用戶註冊</a></div>
+                        <div id="submit">還沒有帳戶?<a href="signUp.php">新帳戶註冊</a></div>
                     </div>
                 <!-- </form> -->
             </div>
@@ -62,14 +67,26 @@
     </div>
 
     <script>
-        // $(function(){
-        //     $("#btnLogin").click(function(){
-        //         let loginData
-        //         username = $("#txtUserName").val();
-        //         $.ajax(
-        //         )
-        //     })
-        // })
+        $(function(){
+             $("#btnLogin").click(function(){
+                let loginData = {
+                    userName : $("#txtUserName").val(),
+                    userPass : $("#txtUserPass").val()
+                }
+                $.ajax({
+                    type: "POST",
+                    url: "api/login",
+                    data: loginData
+                }).then(function(e){
+                    console.log(e);
+                    if(e==1){
+                        window.location.href="main.php"
+                    }else{
+                        $("#errorMsg").show();
+                    }
+                })
+            })
+        })
     </script>
 </body>
 </html>

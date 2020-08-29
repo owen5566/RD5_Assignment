@@ -36,15 +36,16 @@
 <body>
     <div class="container">
       <!-- Content here -->
-      <div id = "title" class="row">
+      <?php require("navBar.php")?>
+      <!-- <div id = "title" class="row">
           <div class="col">歡迎</div>
           <div class="col" style="text-align:right"><button type="button" class="btn btn-light">登出</button></div>
-      </div>
+      </div> -->
       <!-- main view -->
       <div id = "balanceBlock" >
           <div id="titlebalace" class="row justify-content-center title-s">帳戶餘額</div>
           <div id="balanceShow" class="row justify-content-center title-s">
-              <div id="balanceNum" class="col-4" style="text-align:right">$*******</div>
+              <div id="balanceNum" class="col-4 justify-content-center" style="text-align:right">$*******</div>
               <div id="blanceEye" class="col-2">
                   <i id = "eye" class="fa fa-eye " aria-hidden="true" onclick="eyeShow(1)"></i>
                   <i id = "eyeHide"class="fa fa-eye-slash hide" aria-hidden="true" onclick="eyeShow(0)"></i>
@@ -52,8 +53,8 @@
           </div>
       </div>
       <div id="controlGroup" class="row justify-content-center">
-        <button type="button" class="btn btn-outline-success">提款</button>
-        <button type="button" class="btn btn-outline-success">存款</button>
+        <button type="button" class="btn btn-outline-success" onclick="window.location.href='withdraw.php'">提款</button>
+        <button type="button" class="btn btn-outline-success" onclick="window.location.href='deposit.php'">存款</button>
         <a href="detail.php">
             <button type="button" class="btn btn-outline-success">查看明細</button>
         </a>

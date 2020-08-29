@@ -1,12 +1,86 @@
 
 <?php
-// 一個簡單但可以運作的 REST API，
-
+// 一個簡單但可以運作的 REST API
 $method = $_SERVER['REQUEST_METHOD'];
-echo rtrim($_GET["url"], "/")."<hr>"; 
+rtrim($_GET["url"], "/")."<hr>"; 
 $url = explode("/", rtrim($_GET["url"], "/") );
+$db = new PDO("mysql:host=localhost;dbname=RD5_db;port=8889", "root", "root");
+$db->exec("set names utf8");
 
-echo $url;
+switch ($method." ".$url[0]) {
+    case 'POST signUp':
+        echo signUp();
+        break;
+    case 'POST checkAccount':
+        echo checkAccount($_POST["accountName"]);
+        break;
+    case 'POST login':
+        echo (login());
+        break;    
+    default:
+        # code...
+        break;
+}
+function checkAccount($account){
+    global $db;
+    $sqlCheckAccount = $db->prepare("select uAccountName from users where uAccountName=:accountName");
+    $sqlCheckAccount->bindParam("accountName", $account, PDO::PARAM_STR);
+        if ($sqlCheckAccount->execute()) {
+            if (!$result = $sqlCheckAccount->fetch()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        } else {
+            return "query account error";
+        }
+}
+function signUp(){
+    global $db;
+    if (checkAccount($_POST["accountName"])){
+        $accountName = $_POST["accountName"];
+        $userPass = $_POST["userPass"];
+        $name = $_POST["name"];
+        $birth = $_POST["birth"];
+        $address = $_POST["address"];
+        $email = $_POST["email"];
+        $sqlSignUp = $db->prepare("INSERT INTO `users` (`uAccountName`, `uPass`, `uName`, `uBirth`, `uAddress`, `uEmail`) 
+                                   VALUES (:accountName, :userPass, :name, :birth, :address, :email)");
+        $sqlSignUp->bindParam("accountName", $accountName, PDO::PARAM_STR);
+        $sqlSignUp->bindParam("userPass", $userPass, PDO::PARAM_STR);
+        $sqlSignUp->bindParam("name", $name, PDO::PARAM_STR);
+        $sqlSignUp->bindParam("birth", $birth, PDO::PARAM_STR);
+        $sqlSignUp->bindParam("address", $address, PDO::PARAM_STR);
+        $sqlSignUp->bindParam("email", $email, PDO::PARAM_STR);
+        if($sqlSignUp->execute()){
+            return "1";
+        }else{
+            return "0";
+        }
+    }else{
+        return "repeat";
+    }
+}
+function login(){
+    global $db;
+    $userAccount = $_POST["userName"];
+    $userPass = $_POST["userPass"];
+    $sqlLogin = $db->prepare("select uAccountName,uPass from users where uAccountName=:accountName");
+    $sqlLogin->bindParam("accountName",$userAccount,PDO::PARAM_STR);
+    if($sqlLogin->execute()){
+        if($row = $sqlLogin->fetch()){
+            if ($userPass==$row["uPass"]) {
+                return 1;
+            }
+        }
+    }
+    return 0;
+}
+// $method = $_SERVER['REQUEST_METHOD'];
+// echo rtrim($_GET["url"], "/")."<hr>"; 
+// $url = explode("/", rtrim($_GET["url"], "/") );
+
+// echo $url;
 
 // $dblink = mysqli_connect("localhost","root","root")or die(mysqli_connect_error());
 // mysqli_query($dblink,"set names utf8");

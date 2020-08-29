@@ -31,6 +31,12 @@
         #submit{
             margin:6px;
         }
+        .pass{
+            color:green
+        }
+        .error{
+            color:red
+        }
     </style>
 </head>
 <body>
@@ -43,10 +49,10 @@
             <div style="font-size: xx-large;color: grey ;margin-bottom: 10px;">註冊</div>
                 <form method = "POST">
                 <div class="form-group row">
-                    <label class="col-4 col-form-label" for="sTxtUserName">帳戶名稱</label> 
+                    <label class="col-4 col-form-label" for="sTxtAccountName">帳戶名稱</label> 
                     <div class="col-8">
-                    <input id="sTxtUserName" name="sTxtUserName" type="text" class="form-control" required>
-                    <div id="checkUserName" class="" style="color: crimson; font-size: xx-small;"></div>
+                    <input id="sTxtAccountName" name="sTxtAccountName" type="text" class="form-control" required>
+                    <div id="checkAccountName" class="" style="font-size: xx-small;"></div>
                     </div>
                 </div>
                 <div class="form-group row">
@@ -79,7 +85,7 @@
                     <label for="sTxtBirth" class="col-4 col-form-label">生日</label> 
                     <div class="col-8">
                     <div class="input-group">
-                        <input id="sTxtBirth" name="sTxtBirth" type="text" class="form-control" required> 
+                        <input id="sTxtBirth" name="sTxtBirth" type="date" class="form-control" required> 
                         <div class="input-group-append">
                         <div class="input-group-text">
                         </div>
@@ -113,18 +119,39 @@
                 </div> 
                 <div class="form-group row">
                     <div class="offset-4 col-8">
-                    <button id = "submit" name="submit" type="submit" class="btn btn-primary" value=1 disabled>註冊</button>
-                    <div id="HelpBlock3" class="" style="color: green; font-size: xx-small;"></div>
+                    <button id = "submit" name="submit" type="button" class="btn btn-primary" value=1 disabled>註冊</button>
+                    <a href="login.php" style="color: gray;">已經擁有帳戶？登入</a>
                     </div>
                 </div>
                 </form>
           </div>
           <div class = 'col' style="background-color: antiquewhite;">
       </div>
+      <!-- 對話盒 -->
+      <div id = "modalSuccess" class="modal fade" tabindex="-1"  role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header modal-delete">
+              <h4 class="modal-title modal-delete">messege</h4>
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+              </button>
+            </div>
+            <div id="modalMsg"class="modal-body">
+              
+            </div>
+            <div class="modal-footer">
+              <!-- <button id = successModalBtn type="button" class="btn btn-success">確定</button> -->
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
     <script>
+        let CheckAccount = 0;
         let checkPass = 0;
         $(function(){
+            
             $("#passHelpBlock").hide();
             $("#passHelpBlock2").hide();
 
@@ -141,18 +168,78 @@
                     checkPass = 1;
                 }
             })
-
+            //檢查全部欄位
             $(".form-control").on("blur",function(){
               let count = 0 ;
                 $(".form-control").each(function(){
                   if($.trim($(this).val())!="")
                     count++;
-                    if(count==7 && checkPass==1){
+                    if(count==7 && checkPass*CheckAccount==1){
                       $("#submit").prop("disabled",false);
                     }else{
                       $("#submit").prop("disabled",true);
                     }
                 });
+            })
+            //檢查帳號重複
+            $("#sTxtAccountName").on("blur",function(){  
+                if($.trim($(this).val())!=""){
+                    let account = {
+                        accountName : $("#sTxtAccountName").val()
+                    };
+                    $.ajax({
+                        type:"post",
+                        url:"API/checkAccount",
+                        data: account
+                    }).then(function(e){
+                        console.log(e);
+                        if(e==1){
+                            $("#checkAccountName").html("<div class='pass'>可使用<div>");
+                            CheckAccount = 1;
+                        }else{
+                            $("#checkAccountName").html("<div class='error'>帳號重複<div>");
+                            CheckAccount = 0;
+                        }
+                    })
+                }else{
+                   //do nothing 
+                }
+            })
+            //註冊
+            $("#submit").click(function(){
+                let signUpData = {
+                    accountName : $("#sTxtAccountName").val(),
+                    userPass : $("#sTxtPass").val(),
+                    name : $("#sTxtName").val(),
+                    birth : $("#sTxtBirth").val(),
+                    address : $("#sTxtAddress").val(),
+                    email : $("#sTxtEmail").val()
+                };
+                //console.log(signUpData);
+                $.ajax({
+                    type:"post",
+                    url:"API/signUp",
+                    data:signUpData
+                }).then(function(e){
+                    console.log(e);
+                    switch (e) {
+                        case 1:
+                            $("#modalMsg").text("註冊成功！請重新登入");
+                            $("#modalSuccess").modal({backdrop: "static"});
+                            window.setTimeout(()=>{
+                                window.location.href='login.php'
+                            },3000)
+                            break;
+                        default:
+                            $("#modalMsg").text("註冊失敗！請檢查資料是否正確");
+                            $("#modalSuccess").modal({backdrop: "static"});
+                            break;
+                    }
+                }).catch(function(e){
+                    console.log(e);
+                    $("#modalMsg").text("註冊失敗！請檢查資料是否正確");
+                        $("#modalSuccess").modal({backdrop: "static"});
+                })
             })
         })
     </script>
