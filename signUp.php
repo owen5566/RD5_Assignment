@@ -171,15 +171,17 @@
             //檢查全部欄位
             $(".form-control").on("blur",function(){
               let count = 0 ;
-                $(".form-control").each(function(){
-                  if($.trim($(this).val())!="")
-                    count++;
-                    if(count==7 && checkPass*CheckAccount==1){
-                      $("#submit").prop("disabled",false);
-                    }else{
-                      $("#submit").prop("disabled",true);
-                    }
-                });
+              setTimeout(function(){
+                  $(".form-control").each(function(){
+                    if($.trim($(this).val())!="")
+                      count++;
+                      if(count==7 && checkPass*CheckAccount==1){
+                        $("#submit").prop("disabled",false);
+                      }else{
+                        $("#submit").prop("disabled",true);
+                      }
+                  });
+              }, 1000);
             })
             //檢查帳號重複
             $("#sTxtAccountName").on("blur",function(){  
@@ -221,23 +223,20 @@
                     url:"API/signUp",
                     data:signUpData
                 }).then(function(e){
-                    console.log(e);
-                    switch (e) {
-                        case 1:
+                    console.log(typeof(e));
+                    if (e==1) {
                             $("#modalMsg").text("註冊成功！請重新登入");
                             $("#modalSuccess").modal({backdrop: "static"});
                             window.setTimeout(()=>{
                                 window.location.href='login.php'
                             },3000)
-                            break;
-                        default:
-                            $("#modalMsg").text("註冊失敗！請檢查資料是否正確");
-                            $("#modalSuccess").modal({backdrop: "static"});
-                            break;
+                    }else{
+                        $("#modalMsg").text("(0)註冊失敗！請檢查資料是否正確");
+                        $("#modalSuccess").modal({backdrop: "static"});
                     }
                 }).catch(function(e){
                     console.log(e);
-                    $("#modalMsg").text("註冊失敗！請檢查資料是否正確");
+                    $("#modalMsg").text("(1)註冊失敗！請檢查資料是否正確");
                         $("#modalSuccess").modal({backdrop: "static"});
                 })
             })

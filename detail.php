@@ -1,5 +1,9 @@
 <?php
-    if(1>2){
+    session_start();
+    if(isset($_SESSION["userId"])){
+        $userId = $_SESSION["userId"];
+        $userName = $_SESSION["userName"];
+    }else{
         header("location: login.php");
     }
 ?>
@@ -28,6 +32,7 @@
         }
         #detailDate{
             padding: 7px;
+            background-color: whitesmoke;
         }
         .action{
            padding: 5px;
@@ -66,8 +71,9 @@
               <div class="col" style="text-align:center">帳戶餘額</div>
           </div>
           <div id="balanceShow" class="row justify-content-center title-s">
-              <div id="balanceNum" class="col-7" style="text-align:right">$*******</div>
-              <div id="blanceEye" class="col-5">
+              <div id="balanceStar" class="col-4" style="text-align:right">$*******</div>
+              <div id="balanceNum" class="col-4 justify-content-center hide" style="text-align:right"></div>
+              <div id="blanceEye" class="col-2">
                   <i id = "eye" class="fa fa-eye " aria-hidden="true" onclick="eyeShow(1)"></i>
                   <i id = "eyeHide"class="fa fa-eye-slash hide" aria-hidden="true" onclick="eyeShow(0)"></i>
               </div>
@@ -75,76 +81,136 @@
       </div>
       <hr>
       <!-- button Group -->
+      
       <div id="controlGroup" class="row justify-content-center">
-        <div id = "btnGroup" class="btn-group" role="group" aria-label="Basic example">
+        <div class="btn-group btn-group-toggle row justify-content-center" data-toggle="buttons">
+            <label class="btn btn-outline-success active">
+              <input type="radio" name="options" id="option1" autocomplete="off" checked> 今天
+            </label>
+            <label class="btn btn-outline-success">
+              <input type="radio" name="options" id="option2" autocomplete="off"> 這週
+            </label>
+            <label class="btn btn-outline-success">
+              <input type="radio" name="options" id="option3" autocomplete="off"> 這個月
+            </label>
+          </div>
+        <!-- <div id = "btnGroup" class="btn-group" role="group" aria-label="Basic example">
             <button type="button" class="btn btn-outline-success btn-detail">今天</button>
             <button type="button" class="btn btn-outline-success btn-detail">這週</button>
             <button type="button" class="btn btn-outline-success btn-detail">這個月</button>
-        </div>
+        </div> -->
       </div>
       <!-- detail list -->
       <div id="detailList" >
-        <div id ="detail" class="row">
-            <div class="col">
-                <div id="detailDate" class="row" style="background-color: whitesmoke;">2020/08/07</div>
-                <div id="detailAction" class="row action">
-                    <div id="ActionName" class="col action">提款</div>
-                    <div id="ActionAmount" class="col action">$1000</div>
-                </div>
-                <div id="detailAction" class="row">
-                    <div id="ActionName" class="col note">備註：</div>
-                    <div id="ActionAmount" class="col note">餘額$5215</div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div id ="detail" class="row">
-            <div class="col">
-                <div id="detailDate" class="row" style="background-color: whitesmoke;">2020/08/07</div>
-                <div id="detailAction" class="row action">
-                    <div id="ActionName" class="col action">提款</div>
-                    <div id="ActionAmount" class="col action">$1000</div>
-                </div>
-                <div id="detailAction" class="row">
-                    <div id="ActionName" class="col note">備註：</div>
-                    <div id="ActionAmount" class="col note">餘額$6215</div>
-                </div>
-            </div>
-        </div>
-        <hr>
-        <div id ="detail" class="row">
-            <div class="col">
-                <div id="detailDate" class="row" style="background-color: whitesmoke;">2020/08/07</div>
-                <div id="detailAction" class="row action">
-                    <div id="ActionName" class="col action">存款</div>
-                    <div id="ActionAmount" class="col action">$7215</div>
-                </div>
-                <div id="detailAction" class="row">
-                    <div id="ActionName" class="col note">備註：</div>
-                    <div id="ActionAmount" class="col note">餘額$7215</div>
-                </div>
-            </div>
-        </div>
       </div>
-      <hr>
+      <div id="detailSum">
+        <div id = "sumIn" class="row justify-content-center"></div>
+        <div id = "sumOut" class="row justify-content-center"></div>
+
+      </div>
     <!-- total -->
 
     <script>
         let balance = 0;
         $(function(){
-            
+            let userInfo;
+            $.ajax({
+                type:"POST",
+                url:"api/getBalance"
+            }).then(function(e){
+                userInfo=JSON.parse(e);
+                $("#navBarUserName").append(userInfo["uName"]);
+                $("#balanceNum").text("$"+userInfo["uBalance"]);
+                
+            })
+            $.ajax({
+                type:"POST",
+                url:"api/getRecord"
+            }).then(function(e){
+                record=JSON.parse(e);
+                console.log(record);
+                let countIn=0;
+                let countOut=0;
+                let sumIn=0;
+                let sumOut=0;
+                record.forEach(element => {
+                    if(element["transMode"]==1) { 
+                        sumIn+=parseInt(element["transAmount"]);
+                        countIn++; 
+                    }else{ 
+                        sumOut+=parseInt(element["transAmount"]);
+                        countOut++;
+                    }
+                    $("#detailList").append(
+                        $("<div id ='detail'/>")
+                        .addClass('row')
+                        .html(
+                            $("<div/>").addClass("col")
+                            .html(
+                                $("<div id = detailDate/>")
+                                .addClass('row')
+                                .text(element["transDate"])
+                            ).append(
+                                $("<div id ='detailAction'/>")
+                                .addClass('row action')
+                                .html(
+                                    $("<div id='ActionName'/>")
+                                    .addClass('col action')
+                                    .text(element["transName"])
+                                ).append(
+                                    $("<div id='ActionAmount'/>")
+                                    .addClass('col action')
+                                    .text("$"+element["transAmount"])
+                                )
+                            ).append(
+                                $("<div id ='detailAction'/>")
+                                .addClass('row')
+                                .html(
+                                    $("<div id='ActionName'/>")
+                                    .addClass('col note')
+                                    .text("備註: "+((element["transNote"]) ? element["transNote"]:""))
+                                ).append(
+                                    $("<div id='ActionAmount'/>")
+                                    .addClass('col note')
+                                    .text("餘額$"+element['transBalance'])
+                                )
+                            )
+                        )
+                    ).append($("<hr>"));    
+                });
+                $("#sumIn").html("存入 " +countIn + " 筆, 共計$" + sumIn);
+                $("#sumOut").html("提出 " +countOut + " 筆, 共計$" + sumOut);
+
+            })
         })
         function eyeShow(status){
             if(status){
                 $("#eyeHide").show();
                 $("#eye").hide();
-                $("#balanceNum").text("$5215");
+                $("#balanceNum").show();
+                $("#balanceStar").hide();
+
             }else{
                 $("#eyeHide").hide();
                 $("#eye").show();
-                $("#balanceNum").text("$*******");
+                $("#balanceNum").hide();
+                $("#balanceStar").show();
+
             }
         }
+        function logout(){
+            $.ajax({
+            type:"POST",
+            url:"api/logout"
+            }).then(function(e){
+                console.log(e);
+                if(e==1){
+                    window.location.href="login.php"
+                }else{
+                    
+                }
+            })
+      }
     </script>
 </body>
 </html>

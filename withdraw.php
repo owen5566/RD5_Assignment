@@ -1,5 +1,11 @@
 <?php
-    
+    session_start();
+    if(isset($_SESSION["userId"])){
+        $userId = $_SESSION["userId"];
+        $userName = $_SESSION["userName"];
+    }else{
+        header("location: login.php");
+    }
 ?>
 
 <!DOCTYPE html>
@@ -67,8 +73,9 @@
               <div class="col" style="text-align:center">帳戶餘額</div>
           </div>
           <div id="balanceShow" class="row justify-content-center title-s">
-              <div id="balanceNum" class="col-7" style="text-align:right">$*******</div>
-              <div id="blanceEye" class="col-5">
+              <div id="balanceStar" class="col-4 justify-content-center" style="text-align:right">$*******</div>
+              <div id="balanceNum" class="col-4 justify-content-center hide" style="text-align:right"></div>
+              <div id="blanceEye" class="col-2">
                   <i id = "eye" class="fa fa-eye " aria-hidden="true" onclick="eyeShow(1)"></i>
                   <i id = "eyeHide"class="fa fa-eye-slash hide" aria-hidden="true" onclick="eyeShow(0)"></i>
               </div>
@@ -105,22 +112,59 @@
     <script>
         let balance = 0;
         $(function(){
+            let userInfo;
+            $.ajax({
+                type:"POST",
+                url:"api/getBalance"
+            }).then(function(e){
+                userInfo=JSON.parse(e);
+                $("#navBarUserName").append(userInfo["uName"]);
+                $("#balanceNum").text("$"+userInfo["uBalance"]);
+                
+            })
             $("#btnClearAmount").click(clearAmount);
+            $("#btnWithdraw").click(withdraw);
+
+            function withdraw(){
+            let dataWithdraw =  {
+                    userId: userInfo["uId"],
+                    transName: "提款",
+                    amount: $("#inputAmount").val()
+                }
+                // console.log(dataWithdraw);
+                $.ajax({
+                    type:"POST",
+                    url:"api/withdraw",
+                    data: dataWithdraw,
+                    success:function(e){
+                        // console.log(JSON.parse(e));
+                        console.log(e);
+                    },
+                    error:(function(e){
+                        console.log(e);
+                    })
+                })
+        }
         })
         function eyeShow(status){
             if(status){
                 $("#eyeHide").show();
                 $("#eye").hide();
-                $("#balanceNum").text("$5215");
+                $("#balanceNum").show();
+                $("#balanceStar").hide();
+
             }else{
                 $("#eyeHide").hide();
                 $("#eye").show();
-                $("#balanceNum").text("$*******");
+                $("#balanceNum").hide();
+                $("#balanceStar").show();
+
             }
         }
         function clearAmount(){
             $("#inputAmount").val("");
         }
+        
     </script>
 </body>
 </html>

@@ -16,7 +16,22 @@ switch ($method." ".$url[0]) {
         break;
     case 'POST login':
         echo (login());
-        break;    
+        break;
+    case 'POST getBalance':
+        echo getBalance();
+        break;
+    case 'POST logout':
+        echo logout();
+        break;
+    case 'POST deposit':
+        var_dump(deposit());
+        break;
+    case 'POST withdraw':
+        var_dump(withdraw());
+        break;
+    case 'POST getRecord':
+        echo json_encode(getRecord());
+        break;
     default:
         # code...
         break;
@@ -53,9 +68,9 @@ function signUp(){
         $sqlSignUp->bindParam("address", $address, PDO::PARAM_STR);
         $sqlSignUp->bindParam("email", $email, PDO::PARAM_STR);
         if($sqlSignUp->execute()){
-            return "1";
+            return 1;
         }else{
-            return "0";
+            return 0;
         }
     }else{
         return "repeat";
@@ -65,17 +80,139 @@ function login(){
     global $db;
     $userAccount = $_POST["userName"];
     $userPass = $_POST["userPass"];
-    $sqlLogin = $db->prepare("select uAccountName,uPass from users where uAccountName=:accountName");
+    $sqlLogin = $db->prepare("select uId,uAccountName,uPass from users where uAccountName=:accountName");
     $sqlLogin->bindParam("accountName",$userAccount,PDO::PARAM_STR);
     if($sqlLogin->execute()){
         if($row = $sqlLogin->fetch()){
             if ($userPass==$row["uPass"]) {
+                session_start();
+                $_SESSION['userId']=$row["uId"];
+                $_SESSION['userName']=$row["uAccountName"];
                 return 1;
             }
         }
     }
     return 0;
 }
+function logout(){
+    session_start();
+    return session_unset();
+    
+}
+function getBalance(){
+    global $db;
+    session_start();
+    if(isset($_SESSION["userId"])){
+        $uId = $_SESSION["userId"];
+        $result = $db->query("select uId , uName, uBalance from users where uId = $uId");
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        return json_encode($row);
+    }else{
+        return "login required";
+    }
+}
+function deposit(){
+    global $db;
+    if(isset($_POST["userId"])&&isset($_POST["amount"])){
+        $uId = $_POST["userId"];
+        $amount=$_POST["amount"];
+        if(!checkAmount($amount)){
+            return "illegal num";
+        }
+        $transName = $_POST["transName"];
+        $transDate = date("Y-m-d H:i:s");  
+        $transUId = (isset($_POST["transUId"])) ? $_POST["transUId"] : "null";
+        $transNote = (isset($_POST["transNote"])) ? $_POST["transNote"] : "null";
+        // return json_encode([$uId,$transName,$transDate,$transNote,$transUId,$amount]);
+        $db->beginTransaction();
+        $sql = "update users set uBalance = uBalance + $amount where uId= $uId;";
+        if(!$result = $db->query($sql)){
+            $db->rollback();
+            return "balance error";
+        }
+        $sql = " select uBalance from users where uId = $uId;";
+        if(!$result = $db->query($sql)){
+            $db->rollback();
+            return "query balance error";
+        }
+        $row = $result->fetch();
+        $transBalance = $row[0];
+        $sql = "INSERT INTO `transactions`( `uId`, `transMode`, `transName`, `transDate`, `transUId`, `transAmount`, `transNote`,`transBalance`) VALUES ($uId, 1 ,'$transName','$transDate',$transUId,$amount,$transNote,$transBalance)";
+        if(!$db->query($sql))
+        {
+            $db->rollback();
+            return $db->errorInfo();                                     
+        }
+        $db->commit();
+        return 1;
+    }
+}
+function withdraw(){
+    global $db;
+    if(isset($_POST["userId"])&&isset($_POST["amount"])){
+        $uId = $_POST["userId"];
+
+        $sql = " select uBalance from users where uId = $uId;";
+        if(!$result = $db->query($sql)){
+            $db->rollback();
+            return "query balance error";
+        }
+        $row = $result->fetch();
+        $balance = $row[0];
+        if((    $amount = $_POST["amount"])<1){
+            return "input error";
+        }
+        if($amount >$balance){
+            return "可憐吶 餘額不足";
+        }
+
+        $transName = $_POST["transName"];
+        $transDate = date("Y-m-d H:i:s");  
+        $transUId = (isset($_POST["transUId"])) ? $_POST["transUId"] : "null";
+        $transNote = (isset($_POST["transNote"])) ? $_POST["transNote"] : "null";
+        
+        // return json_encode([$uId,$transName,$transDate,$transNote,$transUId,$amount]);
+        $db->beginTransaction();
+        $sqlUpdate = "update users set uBalance = uBalance - $amount where uId= $uId;";
+        if(!$result = $db->query($sqlUpdate)){
+            $db->rollback();
+            return "balance error";
+        }
+        if(!$result = $db->query($sql)){
+            $db->rollback();
+            return "query balance error";
+        }
+        $row = $result->fetch();
+        $transBalance = $row[0];
+        $sql = "INSERT INTO `transactions`( `uId`, `transMode`, `transName`, `transDate`, `transUId`, `transAmount`, `transNote`,`transBalance`) VALUES ($uId, '0' ,'$transName','$transDate',$transUId,$amount,$transNote,$transBalance)";
+        if(!$db->query($sql))
+        {
+            $db->rollback();
+            return $db->errorInfo();                                     
+        }
+        $db->commit();
+        return 1;
+    }
+}
+function getRecord(){
+    global $db;
+    session_start();
+    $dataToClient = array();
+    $uId = $_SESSION["userId"];
+    $sql = "select * from transactions where uId=$uId order by transDate DESC";
+    $result = $db->query($sql);
+    while($row = $result->fetch(PDO::FETCH_ASSOC)){
+        $dataToClient[] = $row;
+    }
+    return $dataToClient;
+}
+function checkAmount($num){
+    if (preg_match("/[^0-9]/",$num)||$num=="") {
+        return false;
+    }
+    return true;
+}
+
 // $method = $_SERVER['REQUEST_METHOD'];
 // echo rtrim($_GET["url"], "/")."<hr>"; 
 // $url = explode("/", rtrim($_GET["url"], "/") );

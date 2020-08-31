@@ -1,13 +1,18 @@
 <?php
-    
+    session_start();
+    if(isset($_SESSION["userId"])){
+        $userId = $_SESSION["userId"];
+        $userName = $_SESSION["userName"];
+    }else{
+        header("location: login.php");
+    }..
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>detail</title>
+    <title>存款</title>
     <link rel="stylesheet" href="css/bootstrap4/bootstrap.min.css">
     <link rel="stylesheet" href="css/font-awesome/css/font-awesome.min.css">
     <script src="js/jquery-3.2.1.min.js"></script>
@@ -67,8 +72,9 @@
               <div class="col" style="text-align:center">帳戶餘額</div>
           </div>
           <div id="balanceShow" class="row justify-content-center title-s">
-              <div id="balanceNum" class="col-7" style="text-align:right">$*******</div>
-              <div id="blanceEye" class="col-5">
+              <div id="balanceStar" class="col-4 justify-content-center" style="text-align:right">$*******</div>
+              <div id="balanceNum" class="col-4 justify-content-center hide" style="text-align:right"></div>
+              <div id="blanceEye" class="col-2">
                   <i id = "eye" class="fa fa-eye " aria-hidden="true" onclick="eyeShow(1)"></i>
                   <i id = "eyeHide"class="fa fa-eye-slash hide" aria-hidden="true" onclick="eyeShow(0)"></i>
               </div>
@@ -82,7 +88,7 @@
       <div class="row justify-content-center">
         <div class = "col-6">
             <div class="input-group mb-3">
-                    <input id = "inputAmount" type="number" min="100" class="form-control" placeholder="輸入金額" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
+                <input id = "inputAmount" type="number" min="100" class="form-control" placeholder="輸入金額" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-default">
             </div>
         </div>
             <input id="btnClearAmount" type="button" class="btn btn-outline-secondary col-2" value="清空"></input>
@@ -97,22 +103,85 @@
     <script>
         let balance = 0;
         $(function(){
+            let userInfo;
+            $.ajax({
+                type:"POST",
+                url:"api/getBalance"
+            }).then(function(e){
+                userInfo=JSON.parse(e);
+                $("#navBarUserName").append(userInfo["uName"]);
+                $("#balanceNum").text("$"+userInfo["uBalance"]);
+                
+            })
             $("#btnClearAmount").click(clearAmount);
+            $("#btnDeposit").click(deposit);
+
+            function deposit(){
+                let dataDep =  {
+                    userId: userInfo["uId"],
+                    transName: "存款",
+                    amount: $("#inputAmount").val()
+                }
+                $.ajax({
+                    type:"POST",
+                    url:"api/deposit",
+                    data: dataDep,
+                    success:function(e){
+                        // console.log(JSON.parse(e));
+                        console.log(e);
+                    },
+                    error:(function(e){
+                        console.log(e);
+                    })
+                })
+            }
+            // function logout(){
+            //     $.ajax({
+            //     type:"POST",
+            //     url:"api/logout"
+            //     }).then(function(e){
+            //         console.log(e);
+            //         if(e==1){
+            //             window.location.href="login.php"
+            //         }else{
+                        
+            //         }
+            //     })
+            // }
         })
         function eyeShow(status){
             if(status){
                 $("#eyeHide").show();
                 $("#eye").hide();
-                $("#balanceNum").text("$5215");
+                $("#balanceNum").show();
+                $("#balanceStar").hide();
+
             }else{
                 $("#eyeHide").hide();
                 $("#eye").show();
-                $("#balanceNum").text("$*******");
+                $("#balanceNum").hide();
+                $("#balanceStar").show();
+
             }
         }
         function clearAmount(){
             $("#inputAmount").val("");
         }
+        function logout(){
+            $.ajax({
+            type:"POST",
+            url:"api/logout"
+            }).then(function(e){
+                console.log(e);
+                if(e==1){
+                    window.location.href="login.php"
+                }else{
+                    
+                }
+            })
+      }
+        
+        
     </script>
 </body>
 </html>

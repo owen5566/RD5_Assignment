@@ -1,5 +1,11 @@
 <?php
-    
+    session_start();
+    if(isset($_SESSION["userId"])){
+        $userId = $_SESSION["userId"];
+        $userName = $_SESSION["userName"];
+    }else{
+        header("location: login.php");
+    }
 ?>
 
 <!DOCTYPE html>
@@ -45,8 +51,10 @@
       <div id = "balanceBlock" >
           <div id="titlebalace" class="row justify-content-center title-s">帳戶餘額</div>
           <div id="balanceShow" class="row justify-content-center title-s">
-              <div id="balanceNum" class="col-4 justify-content-center" style="text-align:right">$*******</div>
-              <div id="blanceEye" class="col-2">
+              <div id="balanceStar" class="col-4 justify-content-center" style="text-align:right">$*******</div>
+              <div id="balanceNum" class="col-4 justify-content-center hide" style="text-align:right"></div>
+
+              <div id="balanceEye" class="col-2">
                   <i id = "eye" class="fa fa-eye " aria-hidden="true" onclick="eyeShow(1)"></i>
                   <i id = "eyeHide"class="fa fa-eye-slash hide" aria-hidden="true" onclick="eyeShow(0)"></i>
               </div>
@@ -63,19 +71,43 @@
     <script>
         let balance = 0;
         $(function(){
-            
+            $.ajax({
+                type:"POST",
+                url:"api/getBalance"
+            }).then(function(e){
+                let data=JSON.parse(e);
+                $("#navBarUserName").append(data["uName"]);
+                $("#balanceNum").text("$"+data["uBalance"]);
+            })
         })
         function eyeShow(status){
             if(status){
                 $("#eyeHide").show();
                 $("#eye").hide();
-                $("#balanceNum").text("$5215");
+                $("#balanceNum").show();
+                $("#balanceStar").hide();
+
             }else{
                 $("#eyeHide").hide();
                 $("#eye").show();
-                $("#balanceNum").text("$*******");
+                $("#balanceNum").hide();
+                $("#balanceStar").show();
+
             }
         }
+        function logout(){
+            $.ajax({
+            type:"POST",
+            url:"api/logout"
+            }).then(function(e){
+                console.log(e);
+                if(e==1){
+                    window.location.href="login.php"
+                }else{
+                    
+                }
+            })
+      }
     </script>
 </body>
 </html>

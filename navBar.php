@@ -1,6 +1,6 @@
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <!-- Navbar content -->
-        <a class="navbar-brand" href="#">歡迎使用</a>
+        <a class="navbar-brand" href="#">綠色銀行</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -28,8 +28,14 @@
         <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
       </li>
     </ul>
+    <span id="navBarUserName" class="navbar-text" style="margin-right: 10px;color:white">
+            hello,
+          </span>
     <form class="form-inline my-2 my-lg-0">
-    <div class="col" style="text-align:right"><button type="button" class="btn btn-light">登出</button></div>
+    <div class="col" style="text-align:right">
+      <button type="button" class="btn btn-light" onclick="logout();">登出</button>
+    </div>
     </form>
   </div>
     </nav>
+

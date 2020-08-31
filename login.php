@@ -28,7 +28,7 @@
         #inputRow{
             margin: 20px;
         }
-        #submit{
+        #signUp{
             margin:6px;
         }
         .error{
@@ -45,7 +45,7 @@
         <div id="inputRow" class="row">
             <div class="col">
                 <div id="title-s">登入</div>
-                <!-- <form action="login_p.php" id="login_form" name="login_input" method="POST"> -->
+                <form >
                     <!-- username -->
                     <div class="input-group mb-3 col-6">
                         <input id = "txtUserName" type="text" name="txtUserName" class="form-control" placeholder="使用者帳戶" aria-label="Username"
@@ -59,9 +59,9 @@
                     <div id="errorMsg" class="input-group mb-3 col-6 error" >帳號／密碼錯誤</div>
                     <div class="row" >
                         <input id = "btnLogin" type="submit" name="btnLogin" value="登入" class="btn btn-outline-success col-1.5"></input>
-                        <div id="submit">還沒有帳戶?<a href="signUp.php">新帳戶註冊</a></div>
+                        <div id="signUp">還沒有帳戶?<a href="signUp.php">新帳戶註冊</a></div>
                     </div>
-                <!-- </form> -->
+                </form>
             </div>
             </div>
     </div>
