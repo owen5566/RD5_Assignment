@@ -24,10 +24,10 @@ switch ($method." ".$url[0]) {
         echo logout();
         break;
     case 'POST deposit':
-        var_dump(deposit());
+        echo (deposit());
         break;
     case 'POST withdraw':
-        var_dump(withdraw());
+        echo (withdraw());
         break;
     case 'POST getRecord':
         echo json_encode(getRecord());
@@ -117,7 +117,7 @@ function deposit(){
         $uId = $_POST["userId"];
         $amount=$_POST["amount"];
         if(!checkAmount($amount)){
-            return "illegal num";
+            return "請輸入正確金額";
         }
         $transName = $_POST["transName"];
         $transDate = date("Y-m-d H:i:s");  
@@ -144,7 +144,7 @@ function deposit(){
             return $db->errorInfo();                                     
         }
         $db->commit();
-        return 1;
+        return "交易成功";
     }
 }
 function withdraw(){
@@ -160,7 +160,7 @@ function withdraw(){
         $row = $result->fetch();
         $balance = $row[0];
         if((    $amount = $_POST["amount"])<1){
-            return "input error";
+            return "輸入金額錯誤";
         }
         if($amount >$balance){
             return "可憐吶 餘額不足";
@@ -191,7 +191,7 @@ function withdraw(){
             return $db->errorInfo();                                     
         }
         $db->commit();
-        return 1;
+        return "交易成功";
     }
 }
 function getRecord(){

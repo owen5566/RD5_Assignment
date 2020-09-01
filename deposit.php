@@ -98,6 +98,8 @@
         <input id="btnCancel" type="button" class="btn btn-outline-secondary col-4" value="取消"
                onclick="window.location.href='main.php'"></input>
       </div>
+      <!-- dialog -->
+      <?php require_once("modal.php")?>
       
 
     <script>
@@ -128,7 +130,7 @@
                     data: dataDep,
                     success:function(e){
                         // console.log(JSON.parse(e));
-                        console.log(e);
+                        setModal("交易信息",e);
                     },
                     error:(function(e){
                         console.log(e);
@@ -179,7 +181,15 @@
                     
                 }
             })
-      }
+        }
+        function setModal(title,content){
+            $(".modal-title").text(title);
+            $(".modal-body").html(content);
+            $("#btnModalClose").click(function(){
+                window.location.reload();
+            })
+            $(".modal").modal();
+        }
         
         
     </script>

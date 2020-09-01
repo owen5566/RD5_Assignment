@@ -99,14 +99,9 @@
         <input id="btnCancel" type="button" class="btn btn-outline-secondary col-4" value="取消"
                onclick="window.location.href='main.php'"></input>
       </div>
-      <!-- button Group -->
-      <!-- <div id="controlGroup" class="row justify-content-center">
-        <div id = "btnGroup" class="btn-group" role="group" aria-label="Basic example">
-            <button type="button" class="btn btn-outline-success btn-detail">今天</button>
-            <button type="button" class="btn btn-outline-success btn-detail">這週</button>
-            <button type="button" class="btn btn-outline-success btn-detail">這個月</button>
-        </div>
-      </div> -->
+      <!-- modal -->
+      <?php require_once("modal.php")?>
+
       
 
     <script>
@@ -138,7 +133,7 @@
                     data: dataWithdraw,
                     success:function(e){
                         // console.log(JSON.parse(e));
-                        console.log(e);
+                        setModal("title",e)
                     },
                     error:(function(e){
                         console.log(e);
@@ -164,6 +159,15 @@
         function clearAmount(){
             $("#inputAmount").val("");
         }
+        function setModal(title,content){
+            $(".modal-title").text(title);
+            $(".modal-body").html(content);
+            $("#btnModalClose").click(function(){
+                window.location.reload();
+            })
+            $(".modal").modal();
+        }
+        
         
     </script>
 </body>
