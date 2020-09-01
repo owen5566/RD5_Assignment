@@ -5,7 +5,7 @@
         $userName = $_SESSION["userName"];
     }else{
         header("location: login.php");
-    }..
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">

@@ -1,5 +1,10 @@
 <?php 
     session_start();
+    if(!isset($_SESSION["userId"])){
+       
+    }else{
+        header("location: main.php");
+    }
     
 ?>
 <!DOCTYPE html>
@@ -45,7 +50,6 @@
         <div id="inputRow" class="row">
             <div class="col">
                 <div id="title-s">登入</div>
-                <form >
                     <!-- username -->
                     <div class="input-group mb-3 col-6">
                         <input id = "txtUserName" type="text" name="txtUserName" class="form-control" placeholder="使用者帳戶" aria-label="Username"
@@ -57,11 +61,12 @@
                             aria-describedby="basic-addon1" required>
                     </div>
                     <div id="errorMsg" class="input-group mb-3 col-6 error" >帳號／密碼錯誤</div>
+                    <div id="errorMsg2" class="input-group mb-3 col-6 error" >請輸入帳號／密碼</div>
+
                     <div class="row" >
                         <input id = "btnLogin" type="submit" name="btnLogin" value="登入" class="btn btn-outline-success col-1.5"></input>
                         <div id="signUp">還沒有帳戶?<a href="signUp.php">新帳戶註冊</a></div>
                     </div>
-                </form>
             </div>
             </div>
     </div>
@@ -69,6 +74,18 @@
     <script>
         $(function(){
              $("#btnLogin").click(function(){
+                let count = 0;
+                $("#errorMsg").hide();
+
+                $(".form-control").each(function () {
+                    if ($.trim($(this).val()) != "")
+                        count++;
+                })
+                if(count!=2){
+                    $("#errorMsg2").show();
+                    return 0;
+                }
+                $("#errorMsg2").hide();
                 let loginData = {
                     userName : $("#txtUserName").val(),
                     userPass : $("#txtUserPass").val()

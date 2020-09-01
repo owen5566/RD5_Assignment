@@ -57,6 +57,9 @@
         .note{
             color: grey ;
         }
+        #detailSum{
+            margin: 5px;
+        }
         
 
     </style>
@@ -84,14 +87,14 @@
       
       <div id="controlGroup" class="row justify-content-center">
         <div class="btn-group btn-group-toggle row justify-content-center" data-toggle="buttons">
-            <label class="btn btn-outline-success active">
-              <input type="radio" name="options" id="option1" autocomplete="off" checked> 今天
+            <label id = "" class="radioOp btn btn-outline-success active" data-day="1">
+              <input type="radio" name="options" id="dOption" autocomplete="off" checked> 今天
             </label>
-            <label class="btn btn-outline-success">
-              <input type="radio" name="options" id="option2" autocomplete="off"> 這週
+            <label id = "" class="radioOp btn btn-outline-success" data-day="7">
+              <input type="radio" name="options" id="dOption" autocomplete="off"> 近七天
             </label>
-            <label class="btn btn-outline-success">
-              <input type="radio" name="options" id="option3" autocomplete="off"> 這個月
+            <label id = "" class="radioOp btn btn-outline-success" data-day="30">
+              <input type="radio" name="options" id="dOption" autocomplete="off"> 近一個月
             </label>
           </div>
         <!-- <div id = "btnGroup" class="btn-group" role="group" aria-label="Basic example">
@@ -112,8 +115,11 @@
 
     <script>
         let balance = 0;
+        
         $(function(){
             let userInfo;
+            let record;
+            let today = new Date();
             $.ajax({
                 type:"POST",
                 url:"api/getBalance"
@@ -129,15 +135,36 @@
             }).then(function(e){
                 record=JSON.parse(e);
                 console.log(record);
+                
+                
+                let rDay = new Date("2020-09-01 01:24:33");
+                console.log(rDay.getFullYear());
+                showDetails(record, today, 1);
+                
+            })
+            $(".radioOp").click(function(){
+                showDetails(record,today,($(this).data("day")))
+            })
+        })
+        function showDetails(obj,time,daysAgo){
+                $("#detailList").html("");
                 let countIn=0;
                 let countOut=0;
                 let sumIn=0;
                 let sumOut=0;
-                record.forEach(element => {
+                const oneDay = 1000*60*60*24;
+                obj.forEach(element => {
+                    let tDate = new Date(element["transDate"]);
+                    let mark = "";
+                    if((time-tDate)/oneDay>daysAgo){
+                        return true;
+                    }
                     if(element["transMode"]==1) { 
+                        mark="+";
                         sumIn+=parseInt(element["transAmount"]);
                         countIn++; 
                     }else{ 
+                        mark="-";
                         sumOut+=parseInt(element["transAmount"]);
                         countOut++;
                     }
@@ -149,7 +176,7 @@
                             .html(
                                 $("<div id = detailDate/>")
                                 .addClass('row')
-                                .text(element["transDate"])
+                                .text((element["transDate"]))
                             ).append(
                                 $("<div id ='detailAction'/>")
                                 .addClass('row action')
@@ -160,7 +187,7 @@
                                 ).append(
                                     $("<div id='ActionAmount'/>")
                                     .addClass('col action')
-                                    .text("$"+element["transAmount"])
+                                    .text(mark+"$"+element["transAmount"])
                                 )
                             ).append(
                                 $("<div id ='detailAction'/>")
@@ -180,9 +207,7 @@
                 });
                 $("#sumIn").html("存入 " +countIn + " 筆, 共計$" + sumIn);
                 $("#sumOut").html("提出 " +countOut + " 筆, 共計$" + sumOut);
-
-            })
-        })
+        }
         function eyeShow(status){
             if(status){
                 $("#eyeHide").show();
@@ -210,7 +235,8 @@
                     
                 }
             })
-      }
+        }
+
     </script>
 </body>
 </html>
