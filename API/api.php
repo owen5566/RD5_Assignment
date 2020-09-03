@@ -113,6 +113,8 @@ function getBalance(){
 }
 function deposit(){
     global $db;
+    date_default_timezone_set("Asia/Taipei");
+
     if(isset($_POST["userId"])&&isset($_POST["amount"])){
         $uId = $_POST["userId"];
         $amount=$_POST["amount"];
@@ -149,6 +151,8 @@ function deposit(){
 }
 function withdraw(){
     global $db;
+    date_default_timezone_set("Asia/Taipei");
+
     if(isset($_POST["userId"])&&isset($_POST["amount"])){
         $uId = $_POST["userId"];
 
