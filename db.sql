@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- 主機： localhost:8889
--- 產生時間： 2020 年 09 月 03 日 09:29
+-- 產生時間： 2020 年 09 月 04 日 09:35
 -- 伺服器版本： 5.7.26
 -- PHP 版本： 7.4.2
 
@@ -13,6 +13,8 @@ SET time_zone = "+00:00";
 --
 -- 資料庫： `RD5_db`
 --
+CREATE DATABASE IF NOT EXISTS `RD5_db` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `RD5_db`;
 
 -- --------------------------------------------------------
 
@@ -32,6 +34,11 @@ CREATE TABLE `transactions` (
   `transBalance` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- 資料表新增資料前，先清除舊資料 `transactions`
+--
+
+TRUNCATE TABLE `transactions`;
 --
 -- 傾印資料表的資料 `transactions`
 --
@@ -72,6 +79,11 @@ CREATE TABLE `users` (
   `uBalance` int(11) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- 資料表新增資料前，先清除舊資料 `users`
+--
+
+TRUNCATE TABLE `users`;
 --
 -- 傾印資料表的資料 `users`
 --

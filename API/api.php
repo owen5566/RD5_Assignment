@@ -1,9 +1,10 @@
 
 <?php
-// 一個簡單但可以運作的 REST API
+
 $method = $_SERVER['REQUEST_METHOD'];
 rtrim($_GET["url"], "/")."<hr>"; 
 $url = explode("/", rtrim($_GET["url"], "/") );
+//設定資料庫連線
 $db = new PDO("mysql:host=localhost;dbname=RD5_db;port=8889", "root", "root");
 $db->exec("set names utf8");
 
