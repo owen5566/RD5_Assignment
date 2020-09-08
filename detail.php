@@ -96,6 +96,9 @@
             <label id = "" class="radioOp btn btn-outline-success" data-day="30">
               <input type="radio" name="options" id="dOption" autocomplete="off"> 近一個月
             </label>
+            <label id = "" class="radioOp btn btn-outline-success" data-day="99999">
+              <input type="radio" name="options" id="dOption" autocomplete="off"> 全部時間
+            </label>
           </div>
         <!-- <div id = "btnGroup" class="btn-group" role="group" aria-label="Basic example">
             <button type="button" class="btn btn-outline-success btn-detail">今天</button>

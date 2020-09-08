@@ -223,8 +223,8 @@
                     url:"API/signUp",
                     data:signUpData
                 }).then(function(e){
-                    console.log(typeof(e));
-                    if (e==1) {
+                    console.log(typeof(e),e);
+                    if (e=="1") {
                             $("#modalMsg").text("註冊成功！請重新登入");
                             $("#modalSuccess").modal({backdrop: "static"});
                             window.setTimeout(()=>{

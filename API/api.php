@@ -1,4 +1,3 @@
-
 <?php
 
 $method = $_SERVER['REQUEST_METHOD'];
@@ -56,6 +55,7 @@ function signUp(){
     if (checkAccount($_POST["accountName"])){
         $accountName = $_POST["accountName"];
         $userPass = $_POST["userPass"];
+        $userPass = hash("sha256",$userPass);
         $name = $_POST["name"];
         $birth = $_POST["birth"];
         $address = $_POST["address"];
@@ -85,7 +85,7 @@ function login(){
     $sqlLogin->bindParam("accountName",$userAccount,PDO::PARAM_STR);
     if($sqlLogin->execute()){
         if($row = $sqlLogin->fetch()){
-            if ($userPass==$row["uPass"]) {
+            if (hash("sha256",$userPass)==$row["uPass"]) {
                 session_start();
                 $_SESSION['userId']=$row["uId"];
                 $_SESSION['userName']=$row["uAccountName"];
